@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pit-black: #050505;
+  --color-pit-dark: #0A0A0A;
+  --color-pit-card: #111111;
+  --color-pit-blue: #2563EB;
+  --color-pit-blue-hover: #1D4ED8;
+  --color-pit-red: #EF4444;
+  --color-pit-text: #FFFFFF;
+  --color-pit-subtext: #9CA3AF;
+  --color-pit-accent: #2563EB;
+  --color-pit-gray: #27272a;
+
+  /* Shadcn UI Variables Mapped to PitStopAI Theme */
+  --background: var(--color-pit-black);
+  --foreground: var(--color-pit-text);
+
+  --card: var(--color-pit-card);
+  --card-foreground: var(--color-pit-text);
+
+  --popover: var(--color-pit-card);
+  --popover-foreground: var(--color-pit-text);
+
+  --primary: var(--color-pit-blue);
+  --primary-foreground: #FFFFFF;
+
+  --secondary: var(--color-pit-dark);
+  --secondary-foreground: var(--color-pit-text);
+
+  --muted: var(--color-pit-dark);
+  --muted-foreground: var(--color-pit-subtext);
+
+  --accent: var(--color-pit-dark);
+  --accent-foreground: var(--color-pit-text);
+
+  --destructive: var(--color-pit-red);
+  --destructive-foreground: #FFFFFF;
+
+  --border: #27272a;
+  /* Zinc 800 */
+  --input: #27272a;
+  --ring: var(--color-pit-blue);
+
+  --radius: 0.5rem;
+  --animate-spin-slow: gear-spin 3s linear infinite;
+}
+
+@keyframes gear-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Force Dark Mode Default */
+:root {
+  --background: var(--color-pit-black);
+  --foreground: var(--color-pit-text);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
