@@ -43,10 +43,10 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto px-4 pb-8 pt-4 md:pb-10 bg-gradient-to-t from-pit-black to-transparent">
-            <div className="relative flex items-end gap-2 bg-pit-card border border-pit-gray rounded-xl p-3 md:p-4 shadow-lg ring-1 ring-white/5 focus-within:ring-pit-accent/50 focus-within:border-pit-accent transition-all">
+        <div className="w-full bg-pit-black px-4 py-4 md:py-6">
+            <div className="max-w-4xl mx-auto relative flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 rounded-2xl px-4 py-2 shadow-2xl transition-all focus-within:border-zinc-700">
                 <button
-                    className="p-4 text-pit-subtext hover:text-white hover:bg-pit-dark rounded-lg transition-colors flex-shrink-0"
+                    className="p-2 text-zinc-500 hover:text-white transition-colors flex-shrink-0"
                     title="Attach photo/code"
                 >
                     <Paperclip className="h-5 w-5" />
@@ -57,20 +57,20 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                     value={input}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask PitStopAI about your car..."
-                    className="w-full max-h-[200px] bg-transparent text-white placeholder-pit-subtext resize-none py-4 focus:outline-none text-base min-h-[56px]"
+                    placeholder="Ask about your car..."
+                    className="w-full max-h-[250px] bg-transparent text-white placeholder-zinc-500 resize-none py-2 focus:outline-none text-base min-h-[44px] leading-relaxed"
                     rows={1}
                 />
 
                 <button
                     onClick={handleSubmit}
                     disabled={!input.trim() || isLoading}
-                    className="p-4 bg-pit-accent hover:bg-pit-blue-hover disabled:opacity-50 disabled:hover:bg-pit-accent text-white rounded-lg transition-colors flex-shrink-0 shadow-md"
+                    className="p-2 text-pit-accent hover:text-pit-blue-hover disabled:text-zinc-700 transition-colors flex-shrink-0"
                 >
-                    <Send className="h-4 w-4" />
+                    <Send className="h-5 w-5 fill-current" />
                 </button>
             </div>
-            <p className="text-center text-[10px] text-pit-subtext mt-2">
+            <p className="text-center text-[10px] text-pit-subtext mt-3 opacity-50">
                 PitStopAI can make mistakes. Verify important car maintenance info.
             </p>
         </div>

@@ -12,11 +12,19 @@ export async function POST(req: Request) {
 
         console.log(`[DEBUG] Chat Request: chatId=${passedChatId}, vehicleId=${passedVehicleId}, messagesCount=${messages?.length}`);
 
-        // 0. Check User
+        // 0. Check User and Language Preference
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
             return new Response('Unauthorized', { status: 401 });
         }
+
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('preferred_language')
+            .eq('id', user.id)
+            .single();
+
+        const language = profile?.preferred_language || 'en';
 
         let chatId = passedChatId;
 
@@ -54,9 +62,6 @@ export async function POST(req: Request) {
             if (chat) vehicleId = chat.vehicle_id;
         }
 
-        // ... rest of the logic ... (3-4-5)
-        // Note: I'll use the updated chatId in the persistence onFinish callback
-
         // 3. Fetch Vehicle Context if we have a vehicleId
         let vehicleDetails = "";
         if (vehicleId) {
@@ -66,8 +71,21 @@ export async function POST(req: Request) {
                 .eq('id', vehicleId)
                 .single();
 
-            if (vehicle) {
-                vehicleDetails = `
+            if (language === 'sw') {
+                if (vehicle) {
+                    vehicleDetails = `
+Maelezo ya Gari:
+- Kampuni: ${vehicle.make}
+- Model: ${vehicle.model}
+- Mwaka: ${vehicle.model_year}
+- Aina ya Engine: ${vehicle.engine_type || 'Kawaida'}
+- Kilomita: ${vehicle.mileage_km}km
+- Maelezo Zaidi: ${vehicle.notes || 'Hakuna'}
+`;
+                }
+            } else {
+                if (vehicle) {
+                    vehicleDetails = `
 Vehicle Details:
 - Make: ${vehicle.make}
 - Model: ${vehicle.model}
@@ -76,23 +94,46 @@ Vehicle Details:
 - Mileage: ${vehicle.mileage_km}km
 - Notes: ${vehicle.notes || 'None'}
 `;
+                }
             }
         }
 
-        // 4. Build System Prompt
-        const systemPrompt = `
+        // 4. Build System Prompt based on Language
+        let systemPrompt = "";
+
+        if (language === 'sw') {
+            systemPrompt = `
+Wewe ni fundi wa gari mwenye uzoefu wa zaidi ya miaka 15 mjini Nairobi, Kenya. Una ujuzi wa kutengeneza magari yote, kuanzia Matatu hadi ma-SUV ya kisasa.
+
+Tabia yako:
+- **Mtaalamu lakini mcheshi**: Unajua kazi yako lakini unaongea kama fundi wa mtaani.
+- **Mkweli na Mnyoofu**: Hupembi maneno. Kama paki inabidi ibadilishwe, unasema wazi.
+- **Mkaazi wa Nairobi**: Tumia lugha safi ya Kiswahili lakini changanya na maneno ya mtaani (Sheng) mara chache (kama "maze," "hebu," "shida," "ngori," "sawa").
+- **Usalama Kwanza**: Kila mara mkumbushe mtumiaji kwamba ingawa unatoa ushauri mzuri, ni muhimu gari likaguliwe na fundi physically kwa matatizo makubwa.
+
+Ujumbe wako wote unapaswa kuwa katika lugha ya Kiswahili pekee. Eleza maneno ya kiufundi ya gari kwa undani ili mteja aelewe.
+
+${vehicleDetails}
+
+Toa ushauri maalum na wa kitaalamu kulingana na maelezo ya gari yaliyotolewa. Ikiwa mtumiaji hajatoa maelezo ya gari, waombe kwa adabu ili uweze kutoa jibu sahihi zaidi.
+`;
+        } else {
+            systemPrompt = `
 You are a highly experienced automotive mechanic based in Nairobi, Kenya, with over 15 years of hands-on experience fixing everything from old Matatus to modern SUVs. 
 
 Your personality is:
-- **Professional but casual**: You know your stuff but you speak like a local "fundi" (mechanic).
+- **Professional but casual**: You know your stuff but you speak like a local "fundi" (mechanic) using British English conventions.
 - **Honest & Direct**: You don't sugarcoat things. If a part needs replacing, you say so.
 - **Localized**: Mix in occasional casual Swahili/Sheng terms naturally (e.g., "maze," "hebu," "shida," "ngori," "sawa").
 - **Safety First**: Always remind the user that while you give great advice, they should get a physical inspection for serious issues.
+
+Your responses should be in pure British English, with only very occasional Swahili/Sheng flavor as defined above.
 
 ${vehicleDetails}
 
 Provide specific, practical advice based on the vehicle details if provided. If the user hasn't specified vehicle info, ask them politely so you can be more accurate.
 `;
+        }
 
         // 5. Call Groq
         const result = streamText({

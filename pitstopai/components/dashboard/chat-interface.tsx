@@ -83,26 +83,26 @@ export function ChatInterface({ chatId, initialMessages = [], username }: ChatIn
     const hasMessages = messages.length > 0
 
     return (
-        <div className="relative flex flex-col h-full w-full max-w-5xl mx-auto">
+        <div className="flex flex-col h-full w-full bg-pit-black">
             {/* Scrollable Messages Area */}
             <div className={cn(
-                "flex-1 overflow-y-auto px-6 py-10 md:px-12 md:py-16 transition-all duration-300",
-                hasMessages ? "pb-32 md:pb-40" : ""
+                "flex-1 overflow-y-auto custom-scrollbar pt-10 pb-4 md:pt-16",
+                "transition-all duration-300"
             )}>
                 {!hasMessages && !isLoading ? (
-                    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                        <div className="w-full max-w-2xl mb-8">
+                    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6">
+                        <div className="w-full max-w-3xl mb-8">
                             <WelcomeScreen onPromptClick={(p) => setInput(p)} username={username} />
                         </div>
 
                         {!chatId && (
-                            <div className="w-full max-w-2xl">
+                            <div className="w-full max-w-3xl">
                                 <QuickCarDetailsForm />
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col max-w-4xl mx-auto px-6 md:px-8">
                         {messages.map((m) => (
                             <MessageBubble key={m.id} message={m as any} />
                         ))}
@@ -117,24 +117,17 @@ export function ChatInterface({ chatId, initialMessages = [], username }: ChatIn
                             />
                         )}
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-lg text-red-500 text-sm text-center my-4">
+                            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-red-500 text-sm text-center my-8">
                                 AI is a bit busy bro, maze hebu try again in a few.
                             </div>
                         )}
-                        <div ref={messagesEndRef} className="h-20" />
+                        <div ref={messagesEndRef} className="h-4" />
                     </div>
                 )}
             </div>
 
             {/* Input Area */}
-            <div
-                className={cn(
-                    "transition-all duration-500 ease-in-out z-10 w-full",
-                    hasMessages
-                        ? "absolute bottom-0 left-0 right-0 bg-pit-black/80 backdrop-blur-md border-t border-pit-gray/20 p-4"
-                        : "relative px-4 pb-20 max-w-2xl mx-auto"
-                )}
-            >
+            <div className="w-full border-zinc-900/50">
                 <ChatInput
                     onSendMessage={handleSendMessage}
                     isLoading={isLoading}

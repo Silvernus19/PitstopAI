@@ -91,24 +91,21 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggle, onOpenAccount 
                         <X className="h-6 w-6" />
                     </button>
                 </div>
-
                 <div className={cn("flex-1 overflow-y-auto flex flex-col gap-8", isCollapsed ? "p-3" : "p-6 md:p-8")}>
-                    {/* New Chat Button */}
-                    <Link
-                        href="/dashboard"
-                        onClick={() => window.innerWidth < 768 && onClose()}
-                        className={cn(
-                            "flex items-center w-full py-4 mt-2 mb-4 bg-pit-accent hover:bg-pit-blue-hover text-white rounded-lg font-medium transition-colors shadow-lg shadow-pit-accent/20",
-                            isCollapsed ? "justify-center" : "gap-2 justify-center"
-                        )}
-                        title={isCollapsed ? "New Chat" : undefined}
-                    >
-                        <PlusCircle className="h-5 w-5" />
-                        {!isCollapsed && <span>New Chat</span>}
-                    </Link>
-
                     {/* Main Nav */}
                     <nav className="flex flex-col gap-3">
+                        <Link
+                            href="/dashboard"
+                            onClick={() => window.innerWidth < 768 && onClose()}
+                            className={cn(
+                                "flex items-center text-pit-subtext hover:text-white hover:bg-pit-card rounded-md transition-colors w-full",
+                                isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-3"
+                            )}
+                            title={isCollapsed ? "New Chat" : undefined}
+                        >
+                            <Plus className="h-5 w-5" />
+                            {!isCollapsed && <span className="text-base font-medium">New Chat</span>}
+                        </Link>
                         <Link
                             href="/settings"
                             className={cn(

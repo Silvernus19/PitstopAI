@@ -18,7 +18,7 @@ export function MessageBubble({ message, className, ...props }: MessageBubblePro
     return (
         <div
             className={cn(
-                "flex w-full mb-10 md:mb-12",
+                "flex w-full mb-12 md:mb-16",
                 isUser ? "justify-end" : "justify-start",
                 className
             )}
@@ -26,10 +26,10 @@ export function MessageBubble({ message, className, ...props }: MessageBubblePro
         >
             <div
                 className={cn(
-                    "max-w-[85%] md:max-w-[70%] px-6 py-5 md:px-8 md:py-6 rounded-2xl md:rounded-3xl text-base md:text-lg leading-relaxed md:leading-8 break-words shadow-sm",
+                    "max-w-[85%] md:max-w-[75%] px-8 py-6 md:px-10 md:py-7 rounded-[2rem] text-[17px] md:text-[19px] leading-relaxed md:leading-8 break-words",
                     isUser
-                        ? "bg-pit-accent text-white rounded-br-none"
-                        : "bg-pit-card text-pit-text/90 rounded-bl-none border border-pit-gray"
+                        ? "bg-pit-accent text-white"
+                        : "bg-zinc-900/50 text-pit-text/95"
                 )}
             >
                 {message.isLoading ? (

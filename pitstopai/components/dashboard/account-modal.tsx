@@ -143,22 +143,65 @@ export function AccountModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
                                     </Label>
                                     <Input id="phone_number" name="phone_number" defaultValue={profile.phone_number || ""} className="bg-pit-black border-pit-gray text-white h-11" placeholder="+254..." />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     <Label htmlFor="preferred_language" className="text-white flex items-center gap-2">
                                         <Globe className="h-4 w-4 text-pit-subtext" />
-                                        Language
+                                        Chat Language
                                     </Label>
-                                    <select
-                                        id="preferred_language"
-                                        name="preferred_language"
-                                        defaultValue={profile.preferred_language || "en"}
-                                        className="w-full bg-pit-black border border-pit-gray text-white h-11 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-pit-accent transition-all"
-                                    >
-                                        <option value="en">English (US)</option>
-                                        <option value="sw">Swahili</option>
-                                        <option value="fr">French</option>
-                                        <option value="de">German</option>
-                                    </select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <label
+                                            className={cn(
+                                                "relative flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-200",
+                                                (profile.preferred_language === 'en' || !profile.preferred_language)
+                                                    ? "bg-pit-accent/10 border-pit-accent text-white shadow-[0_0_15px_rgba(82,0,255,0.1)]"
+                                                    : "bg-pit-black border-pit-gray text-pit-subtext hover:border-pit-accent/50 hover:bg-white/5"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-lg">🇬🇧</div>
+                                                <span className="font-medium">English</span>
+                                            </div>
+                                            <input
+                                                type="radio"
+                                                name="preferred_language"
+                                                value="en"
+                                                className="hidden"
+                                                defaultChecked={profile.preferred_language === 'en' || !profile.preferred_language}
+                                                onChange={(e) => setProfile(prev => prev ? { ...prev, preferred_language: e.target.value } : null)}
+                                            />
+                                            {(profile.preferred_language === 'en' || !profile.preferred_language) && (
+                                                <div className="w-2 h-2 rounded-full bg-pit-accent shadow-[0_0_8px_rgba(82,0,255,0.8)]" />
+                                            )}
+                                        </label>
+
+                                        <label
+                                            className={cn(
+                                                "relative flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all duration-200",
+                                                profile.preferred_language === 'sw'
+                                                    ? "bg-pit-accent/10 border-pit-accent text-white shadow-[0_0_15px_rgba(82,0,255,0.1)]"
+                                                    : "bg-pit-black border-pit-gray text-pit-subtext hover:border-pit-accent/50 hover:bg-white/5"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-lg">🇰🇪</div>
+                                                <span className="font-medium">Kiswahili</span>
+                                            </div>
+                                            <input
+                                                type="radio"
+                                                name="preferred_language"
+                                                value="sw"
+                                                className="hidden"
+                                                defaultChecked={profile.preferred_language === 'sw'}
+                                                onChange={(e) => setProfile(prev => prev ? { ...prev, preferred_language: e.target.value } : null)}
+                                            />
+                                            {profile.preferred_language === 'sw' && (
+                                                <div className="w-2 h-2 rounded-full bg-pit-accent shadow-[0_0_8px_rgba(82,0,255,0.8)]" />
+                                            )}
+                                        </label>
+                                    </div>
+                                    <p className="text-[10px] text-pit-subtext italic">
+                                        Note: AI responses will switch to this language for new messages.
+                                    </p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-white flex items-center gap-2">
