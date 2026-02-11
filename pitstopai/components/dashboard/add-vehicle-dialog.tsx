@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { PlusCircle, Loader2, Car } from "lucide-react"
 import { addVehicle } from "@/app/dashboard/actions"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog" // Assuming you have/will create shadcn dialog or use raw
+
 // Since I don't recall seeing dialog in the file list, I'll create a simple raw modal if shadcn isn't fully there, but wait, 
 // I should probably stick to standard HTML/Tailwind modal to be safe and dependency-free if shadcn is partial.
 // Actually, let's build a custom modal to avoid "component not found" issues since I saw Button/Input but not Dialog.
