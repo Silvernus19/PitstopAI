@@ -15,7 +15,6 @@ const alertVariants = cva(
         },
         defaultVariants: {
             variant: "default",
-            leading: "default",
         },
     }
 )
