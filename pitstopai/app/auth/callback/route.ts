@@ -16,11 +16,11 @@ export async function GET(request: Request) {
             const isLocalEnv = process.env.NODE_ENV === 'development'
             if (isLocalEnv) {
                 // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-                return NextResponse.redirect(`${origin}/auth/verified`)
+                return NextResponse.redirect(`${origin}/dashboard`)
             } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}/auth/verified`)
+                return NextResponse.redirect(`https://${forwardedHost}/dashboard`)
             } else {
-                return NextResponse.redirect(`${origin}/auth/verified`)
+                return NextResponse.redirect(`${origin}/dashboard`)
             }
         }
     }

@@ -2,12 +2,15 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { User, Settings, LogOut } from "lucide-react"
-import { logout } from "@/app/auth/actions"
+import { createClient } from "@/utils/supabase/client"
 
 export function AvatarDropdown({ userAvatarUrl, userInitials }: { userAvatarUrl?: string; userInitials?: string }) {
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
+    const supabase = createClient()
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -23,7 +26,9 @@ export function AvatarDropdown({ userAvatarUrl, userInitials }: { userAvatarUrl?
 
     const handleLogout = async () => {
         setIsOpen(false)
-        await logout()
+        await supabase.auth.signOut()
+        router.push("/")
+        router.refresh()
     }
 
     return (
