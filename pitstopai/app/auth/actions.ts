@@ -25,7 +25,15 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
 
     const supabase = await createClient()
 
-    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    let redirectUrl = process.env.NEXT_PUBLIC_SITE_URL
+
+    if (!redirectUrl && process.env.VERCEL_URL) {
+        redirectUrl = `https://${process.env.VERCEL_URL}`
+    }
+
+    if (!redirectUrl) {
+        redirectUrl = 'http://localhost:3000'
+    }
 
     const { error } = await supabase.auth.signUp({
         email,
