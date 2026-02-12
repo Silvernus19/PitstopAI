@@ -1,8 +1,8 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-
 
 export interface SignupState {
     error?: string
@@ -25,18 +25,38 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
 
     const supabase = await createClient()
 
-    const getURL = () => {
+    const getURL = async () => {
         let url =
             process.env.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
             process.env.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-            process.env.VERCEL_URL ?? // Automatically set by Vercel (server-side).
-            'http://localhost:3000/'
+            process.env.VERCEL_URL // Automatically set by Vercel (server-side).
+
+        if (!url && process.env.NODE_ENV === 'development') {
+            url = 'http://localhost:3000/'
+        }
+
+        url = url ?? '' // Fallback to empty string if nothing found in production (though headers should catch it)
+
+        // Try to use headers for a more accurate origin if available
+        try {
+            const headersList = await headers()
+            const host = headersList.get('x-forwarded-host') || headersList.get('host')
+            const protocol = headersList.get('x-forwarded-proto') || 'https'
+            if (host) {
+                url = `${protocol}://${host}`
+            }
+        } catch (e) {
+            // Ignore error if headers() fails (shouldn't happen in server action but safe to wrap)
+        }
+
         // Make sure to include `https://` when not localhost.
         url = url.includes('http') ? url : `https://${url}`
         // Make sure to include a trailing `/`.
         url = url.charAt(url.length - 1) === '/' ? url : `${url}/`
         return url
     }
+
+    const redirectUrl = await getURL()
 
     const { error } = await supabase.auth.signUp({
         email,
@@ -45,7 +65,7 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
             data: {
                 username,
             },
-            emailRedirectTo: `${getURL()}auth/callback`,
+            emailRedirectTo: `${redirectUrl}auth/callback`,
         },
     })
 
