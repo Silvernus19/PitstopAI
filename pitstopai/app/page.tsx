@@ -2,6 +2,10 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/utils/supabase/server"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Hero } from "@/components/landing/hero"
+import { Features } from "@/components/landing/features"
+import { HowItWorks } from "@/components/landing/how-it-works"
+import { CTASection } from "@/components/landing/cta-section"
 
 export default async function RootPage() {
     const supabase = await createClient()
@@ -12,49 +16,39 @@ export default async function RootPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-black text-white">
-            <header className="px-6 h-16 flex items-center justify-between border-b border-white/10">
+        <div className="flex flex-col min-h-screen bg-black text-white selection:bg-pit-accent selection:text-white">
+            <header className="fixed top-0 left-0 right-0 z-50 px-6 h-16 flex items-center justify-between border-b border-white/5 bg-black/80 backdrop-blur-md">
                 <div className="flex items-center gap-2 font-bold text-xl">
-                    <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <div className="h-8 w-8 bg-pit-accent rounded-lg flex items-center justify-center shadow-lg shadow-pit-accent/20">
                         <span className="text-white">P</span>
                     </div>
                     PitstopAI
                 </div>
                 <nav className="flex gap-4">
                     <Link href="/auth/signin">
-                        <Button variant="ghost" className="text-gray-300 hover:text-white">Sign In</Button>
+                        <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/10">Sign In</Button>
                     </Link>
                     <Link href="/auth/signup">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">Get Started</Button>
+                        <Button className="bg-pit-accent hover:bg-pit-blue-hover text-white shadow-lg shadow-pit-accent/20">Get Started</Button>
                     </Link>
                 </nav>
             </header>
 
-            <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-                <div className="max-w-3xl space-y-8">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-                        Your Personal AI Mechanic
-                    </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Diagnose car issues instantly, understand error codes, and get maintenance advice powered by advanced AI.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-                        <Link href="/auth/signup">
-                            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white h-12 px-8 text-lg">
-                                Start Diagnosing Free
-                            </Button>
-                        </Link>
-                        <Link href="/auth/signin">
-                            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 h-12 px-8 text-lg">
-                                Login to Account
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
+            <main className="flex-1">
+                <Hero />
+                <Features />
+                <HowItWorks />
+                <CTASection />
             </main>
 
-            <footer className="py-8 text-center text-gray-500 text-sm border-t border-white/10">
-                <p>&copy; {new Date().getFullYear()} PitstopAI. All rights reserved.</p>
+            <footer className="py-12 bg-black border-t border-white/10 text-center">
+                <div className="flex items-center justify-center gap-2 font-bold text-xl mb-4">
+                    <div className="h-6 w-6 bg-pit-accent rounded flex items-center justify-center">
+                        <span className="text-white text-xs">P</span>
+                    </div>
+                    PitstopAI
+                </div>
+                <p className="text-pit-subtext text-sm">&copy; {new Date().getFullYear()} PitstopAI. Built for Kenyan Roads.</p>
             </footer>
         </div>
     )
