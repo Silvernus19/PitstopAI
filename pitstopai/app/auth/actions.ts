@@ -26,28 +26,32 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
     const supabase = await createClient()
 
     const getURL = async () => {
-        let url =
-            process.env.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-            process.env.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-            process.env.VERCEL_URL // Automatically set by Vercel (server-side).
+        let url = process.env.NEXT_PUBLIC_SITE_URL
+
+        // If NEXT_PUBLIC_SITE_URL is not set, try to infer from other sources
+        if (!url) {
+            // Try headers first (most accurate for Vercel preview URLs etc if env var not set)
+            try {
+                const headersList = await headers()
+                const host = headersList.get('x-forwarded-host') || headersList.get('host')
+                const protocol = headersList.get('x-forwarded-proto') || 'https'
+                if (host) {
+                    url = `${protocol}://${host}`
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+
+        if (!url) {
+            url = process.env.NEXT_PUBLIC_VERCEL_URL ?? process.env.VERCEL_URL
+        }
 
         if (!url && process.env.NODE_ENV === 'development') {
             url = 'http://localhost:3000/'
         }
 
-        url = url ?? '' // Fallback to empty string if nothing found in production (though headers should catch it)
-
-        // Try to use headers for a more accurate origin if available
-        try {
-            const headersList = await headers()
-            const host = headersList.get('x-forwarded-host') || headersList.get('host')
-            const protocol = headersList.get('x-forwarded-proto') || 'https'
-            if (host) {
-                url = `${protocol}://${host}`
-            }
-        } catch (e) {
-            // Ignore error if headers() fails (shouldn't happen in server action but safe to wrap)
-        }
+        url = url ?? ''
 
         // Make sure to include `https://` when not localhost.
         url = url.includes('http') ? url : `https://${url}`
