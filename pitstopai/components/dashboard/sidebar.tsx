@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
-import { PlusCircle, Settings, User, Car, MessageSquare, X, ChevronDown, ChevronRight, Plus, AlertTriangle } from "lucide-react"
+import { PlusCircle, Settings, User, Car, MessageSquare, X, ChevronDown, ChevronRight, Plus, AlertTriangle, Loader2 } from "lucide-react"
 import { cn, formatRelativeTime } from "@/lib/utils"
 import { useEffect, useState } from "react"
 import { getUserVehicles, createVehicleChat, getUserChats, ChatListItem } from "@/app/dashboard/actions"
@@ -29,6 +29,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggle, onOpenAccount 
     const [chats, setChats] = useState<ChatListItem[]>([])
     const [isLoadingChats, setIsLoadingChats] = useState(true)
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
+    const [isNavigating, setIsNavigating] = useState<string | null>(null)
 
     // Load vehicles on mount
     const loadVehicles = async () => {
@@ -60,11 +61,16 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggle, onOpenAccount 
     }, [isOpen]) // Reload when sidebar opens
 
     const handleVehicleClick = async (v: Vehicle) => {
-        // Trigger server action to create/nav to chat
-        const name = v.nickname || `${v.make} ${v.model}`
-        await createVehicleChat(v.id, name)
-        // On mobile, close sidebar
-        if (window.innerWidth < 768) onClose()
+        if (isNavigating) return
+        setIsNavigating(v.id)
+        try {
+            const name = v.nickname || `${v.make} ${v.model}`
+            await createVehicleChat(v.id, name)
+            if (window.innerWidth < 768) onClose()
+        } catch (error) {
+            console.error("Failed to navigate to vehicle chat", error)
+            setIsNavigating(null)
+        }
     }
 
     return (
@@ -167,9 +173,19 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggle, onOpenAccount 
                                             <button
                                                 key={v.id}
                                                 onClick={() => handleVehicleClick(v)}
-                                                className="text-left text-base text-pit-subtext hover:text-white hover:bg-pit-card py-3 px-2 rounded-md truncate transition-colors"
+                                                disabled={!!isNavigating}
+                                                className={cn(
+                                                    "flex items-center justify-between text-left text-base text-pit-subtext hover:text-white hover:bg-pit-card py-3 px-2 rounded-md transition-colors",
+                                                    isNavigating && isNavigating !== v.id && "opacity-50 cursor-not-allowed",
+                                                    isNavigating === v.id && "text-white bg-pit-card"
+                                                )}
                                             >
-                                                {v.nickname || `${v.make} ${v.model}`}
+                                                <span className="truncate flex-1">
+                                                    {v.nickname || `${v.make} ${v.model}`}
+                                                </span>
+                                                {isNavigating === v.id && (
+                                                    <Loader2 className="h-4 w-4 text-pit-accent animate-spin ml-2 shrink-0" />
+                                                )}
                                             </button>
                                         ))
                                     ) : (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useChat } from "@ai-sdk/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createChat, createChatWithFirstMessage } from "@/app/dashboard/actions"
@@ -57,20 +57,28 @@ export function ChatInterface({ chatId, initialMessages = [], username }: ChatIn
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
 
+    const [isCreatingChat, setIsCreatingChat] = useState(false)
+
     const handleSendMessage = async (messageContent: string) => {
-        if (isLoading) return
+        if (isLoading || isCreatingChat) return
 
         if (!chatId) {
-            // Start a brand new chat
-            const { data, error: createError } = await createChatWithFirstMessage(messageContent)
-            if (createError && !data) {
-                console.error("Failed to create chat", createError)
-                return
-            }
+            setIsCreatingChat(true)
+            try {
+                // Start a brand new chat
+                const { data, error: createError } = await createChatWithFirstMessage(messageContent)
+                if (createError && !data) {
+                    console.error("Failed to create chat", createError)
+                    setIsCreatingChat(false)
+                    return
+                }
 
-            // Navigate to the new chat. 
-            // We include trigger=true to auto-start the AI response since the user message is now in DB.
-            router.push(`/dashboard?chat=${data!.id}&trigger=true`)
+                // Navigate to the new chat. 
+                router.push(`/dashboard?chat=${data!.id}&trigger=true`)
+            } catch (error) {
+                console.error("Error creating chat", error)
+                setIsCreatingChat(false)
+            }
             return
         }
 
