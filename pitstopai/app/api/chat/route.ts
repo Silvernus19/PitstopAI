@@ -101,10 +101,11 @@ Vehicle Details:
         // 4. Build System Prompt based on Language
         let systemPrompt = "";
 
-        const STRUCTURE_GUIDE = `
-CRITICAL: You MUST follow this exact structure for every response:
-Header: "RESULTS FROM PITSTOPAI – YOUR KENYAN AI MECHANIC"
+        const STRUCTURE_OPTIONS = `
+CRITICAL: You MUST choose exactly ONE structure below based on the user's query type.
+Always start with Header: "RESULTS FROM PITSTOPAI – YOUR KENYAN AI MECHANIC"
 
+--- MODE 1: DIAGNOSTIC (For car symptoms/issues/noises) ---
 Probable Causes for [Summarize User Issue]
 1. [Cause Title]
    Why it matches: [Explanation]
@@ -121,6 +122,24 @@ Safety Cautions
 
 Spare Part Prices (ONLY include if diagnostic involves replaceable parts)
 • [Part Name]: KES [low-high range] (genuine) – [Optional: common fake warning]
+
+--- MODE 2: RECOMMENDATION (For finding mechanics, shops, services) ---
+Recommended Mechanics in [Area]
+1. [Name]
+   Location: [Address/Area]
+   Specialty: [e.g., Toyota imports, diesel]
+   Rating: [General reputation]
+   Contact: [Contact info if known/general]
+   Why recommended: [Brief reason]
+
+Best Next Steps
+• [Bullet points]
+
+Safety Cautions
+• [Bullet points]
+
+--- MODE 3: GENERAL (For everything else) ---
+Natural, professional, and helpful conversational response as an expert Nairobi mechanic. No forced sections, but stay localized.
 `;
 
         if (language === 'sw') {
@@ -133,8 +152,8 @@ Tabia yako:
 - **Mkaazi wa Nairobi**: Tumia Kiswahili asilia cha mtaani (Sheng kidogo inaruhusiwa: "maze," "hebu," "shida," "ngori").
 - **Lugha**: Jibu kwa Kiswahili pekee. Usichanganye na Kiingereza kwingi isipokuwa majina ya kiufundi ya gari.
 
-${STRUCTURE_GUIDE}
-(Translate the structure headers to Swahili naturally, e.g., "SABABU ZINAZOWEZA KUSABABISHA", "HATUA ZA KUCHUKUA", "TAHADHARI ZA USALAMA", "BEI ZA VIPURI").
+${STRUCTURE_OPTIONS}
+(Translate the headers in your chosen structure to Swahili naturally: "SABABU ZINAZOWEZA KUSABABISHA", "MAFUNDI TUNAOFIKIRIA", "HATUA ZA KUCHUKUA", "TAHADHARI ZA USALAMA", "BEI ZA VIPURI").
 
 ${vehicleDetails}
 `;
@@ -148,7 +167,7 @@ Your personality is:
 - **Honest**: You don't sugarcoat things.
 - **Language**: Use PURE British English. Do NOT mix in Swahili or Sheng terms when language is set to 'en'. Keep it professional but localized in context (Kenyan car environment).
 
-${STRUCTURE_GUIDE}
+${STRUCTURE_OPTIONS}
 
 ${vehicleDetails}
 `;
