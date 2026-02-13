@@ -1,6 +1,7 @@
 "use client"
 
 import { MessageSquare } from "lucide-react"
+import Image from "next/image"
 
 interface WelcomeScreenProps {
     onPromptClick: (prompt: string) => void
@@ -27,6 +28,15 @@ export function WelcomeScreen({ onPromptClick, username }: WelcomeScreenProps) {
                 </div>
                 <div className="space-y-3">
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight">PitStopAI</h2>
+                    <div className="flex justify-center pt-2">
+                        <Image
+                            src="/dashboard-logo.svg"
+                            alt="PitStopAI Logo"
+                            width={120}
+                            height={120}
+                            className="h-auto w-24 md:w-32"
+                        />
+                    </div>
                     <p className="text-2xl md:text-3xl text-gray-300 mt-4 text-center font-medium">
                         {welcomeMessage}
                     </p>
