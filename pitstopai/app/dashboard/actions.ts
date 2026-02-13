@@ -66,12 +66,16 @@ export async function createVehicleChat(vehicleId: string, vehicleName: string) 
 
     if (!user) return { error: 'Not authenticated' }
 
-    // Optional: Check if a chat already exists for this vehicle to avoid duplicates?
-    // For now, let's just create a new one as requested logic implies flexibility.
+    // Fetch vehicle details for the initial message
+    const { data: v } = await supabase
+        .from('user_vehicles')
+        .select('*')
+        .eq('id', vehicleId)
+        .single()
 
     const title = `Chat about ${vehicleName}`
 
-    const { data, error } = await supabase
+    const { data: chat, error: chatError } = await supabase
         .from('chats')
         .insert({
             user_id: user.id,
@@ -81,12 +85,27 @@ export async function createVehicleChat(vehicleId: string, vehicleName: string) 
         .select()
         .single()
 
-    if (error) {
-        console.error('Error creating chat:', error)
-        return { error: error.message }
+    if (chatError) {
+        console.error('Error creating chat:', chatError)
+        return { error: chatError.message }
     }
 
-    redirect(`/dashboard?chat=${data.id}`)
+    // Insert an initial automated user message with specs
+    if (v) {
+        const specs = `${v.model_year} ${v.make} ${v.model}${v.engine_type ? ` (${v.engine_type})` : ''}${v.mileage_km ? ` with ${v.mileage_km.toLocaleString()}km` : ''}`
+        const initialContent = `I want to chat about my ${specs}. Please confirm you have these details and tell me how you can help me maintain this specific car.`
+
+        await supabase.from('messages').insert({
+            chat_id: chat.id,
+            role: 'user',
+            content: initialContent,
+            metadata: { is_auto_init: true }
+        })
+    }
+
+    revalidatePath('/dashboard')
+    // Redirect with trigger=true to auto-start AI response
+    redirect(`/dashboard?chat=${chat.id}&trigger=true`)
 }
 
 export async function createChat(title: string, vehicleId?: string) {
