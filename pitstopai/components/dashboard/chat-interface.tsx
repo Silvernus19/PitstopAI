@@ -93,7 +93,7 @@ export function ChatInterface({ chatId, initialMessages = [], username }: ChatIn
                 {!hasMessages && !isLoading ? (
                     <div className="flex flex-col items-center justify-center min-h-[70vh] px-6">
                         <div className="w-full max-w-3xl mb-8">
-                            <WelcomeScreen onPromptClick={(p) => setInput(p)} username={username} />
+                            <WelcomeScreen onPromptClick={handleSendMessage} username={username} />
                         </div>
 
                         {!chatId && (
