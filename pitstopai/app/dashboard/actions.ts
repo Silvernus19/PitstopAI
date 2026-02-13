@@ -138,7 +138,7 @@ export async function createChatWithFirstMessage(content: string, vehicleId?: st
 
     const title = content.length > 30 ? content.substring(0, 30) + "..." : content
 
-    // 1. Create the chat
+    const startTime = Date.now()
     const { data: chat, error: chatError } = await supabase
         .from('chats')
         .insert({
@@ -148,6 +148,8 @@ export async function createChatWithFirstMessage(content: string, vehicleId?: st
         })
         .select()
         .single()
+
+    console.log(`[PERF] createChatWithFirstMessage: Chat created in ${Date.now() - startTime}ms`)
 
     if (chatError) {
         console.error('Error creating chat:', chatError)
@@ -434,6 +436,7 @@ export async function createErrorCodeChat(code: string, vehicleId?: string, manu
 
     if (!user) return { error: 'Not authenticated' }
 
+    const startTime = Date.now()
     // 1. Create a new chat
     const { data: chat, error: chatError } = await supabase
         .from('chats')
@@ -444,6 +447,8 @@ export async function createErrorCodeChat(code: string, vehicleId?: string, manu
         })
         .select()
         .single()
+
+    console.log(`[PERF] createErrorCodeChat: Chat created in ${Date.now() - startTime}ms`)
 
     if (chatError) return { error: chatError.message }
 

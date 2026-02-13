@@ -10,25 +10,31 @@ export async function POST(req: Request) {
         const { messages, chatId: passedChatId, vehicleId: passedVehicleId } = await req.json();
         const supabase = await createClient();
 
-        console.log(`[DEBUG] Chat Request: chatId=${passedChatId}, vehicleId=${passedVehicleId}, messagesCount=${messages?.length}`);
+        console.log(`[PERF_START] Chat Processing: chatId=${passedChatId}`);
+        const startTime = Date.now();
 
-        // 0. Check User and Language Preference
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            return new Response('Unauthorized', { status: 401 });
-        }
+        // 1. Parallelize User and Initial Metadata Checks
+        const [userResult, profileResult] = await Promise.all([
+            supabase.auth.getUser(),
+            passedChatId ? supabase.from('chats').select('vehicle_id').eq('id', passedChatId).single() : Promise.resolve({ data: null })
+        ]);
 
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('preferred_language')
-            .eq('id', user.id)
-            .single();
+        const { data: { user } } = userResult;
+        if (!user) return new Response('Unauthorized', { status: 401 });
 
-        const language = profile?.preferred_language || 'en';
+        // 2. Parallelize Profile and Vehicle Detailed Checks
+        const vehicleIdToFetch = passedVehicleId || profileResult.data?.vehicle_id;
 
+        const [profileMeta, vehicleMeta] = await Promise.all([
+            supabase.from('profiles').select('preferred_language').eq('id', user.id).single(),
+            vehicleIdToFetch ? supabase.from('user_vehicles').select('*').eq('id', vehicleIdToFetch).single() : Promise.resolve({ data: null })
+        ]);
+
+        const language = profileMeta.data?.preferred_language || 'en';
+        const vehicle = vehicleMeta.data;
         let chatId = passedChatId;
 
-        // 1. If no chatId, create a new chat first
+        // 3. New Chat Creation (Sequential only if needed)
         if (!chatId) {
             const firstMessage = messages[0]?.content || "New Chat";
             const title = firstMessage.length > 30 ? firstMessage.substring(0, 30) + "..." : firstMessage;
@@ -38,69 +44,41 @@ export async function POST(req: Request) {
                 .insert({
                     user_id: user.id,
                     title: title,
-                    vehicle_id: passedVehicleId || null
+                    vehicle_id: vehicleIdToFetch || null
                 })
                 .select()
                 .single();
 
-            if (chatError) {
-                console.error('Error creating new chat:', chatError);
-                // Continue anyway but persistence will fail later
-            } else {
-                chatId = newChat.id;
-            }
+            if (!chatError) chatId = newChat.id;
         }
 
-        // 2. Determine vehicleId
-        let vehicleId = passedVehicleId;
-        if (!vehicleId && chatId) {
-            const { data: chat } = await supabase
-                .from('chats')
-                .select('vehicle_id')
-                .eq('id', chatId)
-                .single();
-            if (chat) vehicleId = chat.vehicle_id;
-        }
+        console.log(`[PERF_META] Metadata loaded in ${Date.now() - startTime}ms`);
 
-        // 3. Fetch Vehicle Context if we have a vehicleId
+        // 4. Build Context
         let vehicleDetails = "";
-        if (vehicleId) {
-            const { data: vehicle } = await supabase
-                .from('user_vehicles')
-                .select('*')
-                .eq('id', vehicleId)
-                .single();
-
+        if (vehicle) {
             if (language === 'sw') {
-                if (vehicle) {
-                    vehicleDetails = `
+                vehicleDetails = `
 Maelezo ya Gari:
 - Kampuni: ${vehicle.make}
 - Model: ${vehicle.model}
 - Mwaka: ${vehicle.model_year}
 - Aina ya Engine: ${vehicle.engine_type || 'Kawaida'}
 - Kilomita: ${vehicle.mileage_km}km
-- Maelezo Zaidi: ${vehicle.notes || 'Hakuna'}
 `;
-                }
             } else {
-                if (vehicle) {
-                    vehicleDetails = `
+                vehicleDetails = `
 Vehicle Details:
 - Make: ${vehicle.make}
 - Model: ${vehicle.model}
 - Year: ${vehicle.model_year}
 - Engine: ${vehicle.engine_type || 'Standard'}
 - Mileage: ${vehicle.mileage_km}km
-- Notes: ${vehicle.notes || 'None'}
 `;
-                }
             }
         }
 
-        // 4. Build System Prompt based on Language
-        let systemPrompt = "";
-
+        // 5. System Prompt Construction
         const STRUCTURE_OPTIONS = `
 CRITICAL: You MUST choose exactly ONE structure below based on the user's query type.
 Always start with Header: "RESULTS FROM PITSTOPAI – YOUR KENYAN AI MECHANIC"
@@ -132,89 +110,51 @@ Recommended Mechanics in [Area]
    Contact: [Contact info if known/general]
    Why recommended: [Brief reason]
 
-Best Next Steps
-• [Bullet points]
-
-Safety Cautions
-• [Bullet points]
-
 --- MODE 3: GENERAL (For everything else) ---
 Natural, professional, and helpful conversational response as an expert Nairobi mechanic. No forced sections, but stay localized.
 `;
 
-        if (language === 'sw') {
-            systemPrompt = `
-Wewe ni fundi wa gari mwenye uzoefu wa zaidi ya miaka 15 mjini Nairobi, Kenya.
-
+        const systemPrompt = language === 'sw'
+            ? `Wewe ni fundi wa gari mwenye uzoefu wa zaidi ya miaka 15 mjini Nairobi, Kenya.
 Tabia yako:
 - **Mtaalamu lakini mcheshi**: Unajua kazi yako lakini unaongea kama fundi wa mtaani.
-- **Mkweli na Mnyoofu**: Hupembi maneno.
-- **Mkaazi wa Nairobi**: Tumia Kiswahili asilia cha mtaani (Sheng kidogo inaruhusiwa: "maze," "hebu," "shida," "ngori").
 - **Lugha**: Jibu kwa Kiswahili pekee. Usichanganye na Kiingereza kwingi isipokuwa majina ya kiufundi ya gari.
 
 ${STRUCTURE_OPTIONS}
-(Translate the headers in your chosen structure to Swahili naturally: "SABABU ZINAZOWEZA KUSABABISHA", "MAFUNDI TUNAOFIKIRIA", "HATUA ZA KUCHUKUA", "TAHADHARI ZA USALAMA", "BEI ZA VIPURI").
-
-${vehicleDetails}
-`;
-        } else {
-            // Default English 'en'
-            systemPrompt = `
-You are a highly experienced automotive mechanic based in Nairobi, Kenya, with over 15 years of hands-on experience. 
-
+${vehicleDetails}`
+            : `You are a highly experienced automotive mechanic based in Nairobi, Kenya, with over 15 years of hands-on experience. 
 Your personality is:
 - **Professional but direct**: You know your stuff and speak like a local "fundi" (mechanic).
-- **Honest**: You don't sugarcoat things.
-- **Language**: Use PURE British English. Do NOT mix in Swahili or Sheng terms when language is set to 'en'. Keep it professional but localized in context (Kenyan car environment).
+- **Language**: Use PURE British English. Do NOT mix in Swahili or Sheng terms when language is set to 'en'.
 
 ${STRUCTURE_OPTIONS}
+${vehicleDetails}`;
 
-${vehicleDetails}
-`;
-        }
-
-        // 5. Call Groq
+        // 6. Call Groq with FASTER model
         const result = streamText({
-            model: groq('llama-3.3-70b-versatile'),
+            model: groq('llama-3.1-8b-instant'),
             system: systemPrompt,
             messages: await convertToModelMessages(messages),
-            onError: ({ error }) => {
-                console.error('streamText Error callback:', error);
-            },
             onFinish: async ({ text }) => {
-                // Save User Message and Assistant Message
-                const lastUserMessage = messages[messages.length - 1];
-
                 if (chatId) {
-                    try {
-                        await supabase.from('messages').insert({
-                            chat_id: chatId,
-                            role: 'user',
-                            content: lastUserMessage.content
-                        });
-
-                        await supabase.from('messages').insert({
+                    await Promise.all([
+                        supabase.from('messages').insert({
                             chat_id: chatId,
                             role: 'assistant',
                             content: text
-                        });
-
-                        await supabase.from('chats').update({
+                        }),
+                        supabase.from('chats').update({
                             updated_at: new Date().toISOString()
-                        }).eq('id', chatId);
-                    } catch (dbError) {
-                        console.error('Database persistence error:', dbError);
-                    }
+                        }).eq('id', chatId)
+                    ]);
                 }
+                console.log(`[PERF_END] Total round trip: ${Date.now() - startTime}ms`);
             },
         });
 
         return result.toTextStreamResponse();
     } catch (error) {
         console.error('Chat API Error:', error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response('Internal error', { status: 500 });
     }
 }
