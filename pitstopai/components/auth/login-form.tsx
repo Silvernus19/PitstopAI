@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
 
 import { SignupState } from '@/app/auth/actions'
@@ -23,6 +24,15 @@ export function LoginForm() {
     return (
         <Card className="w-full max-w-md border-pit-accent/20 bg-pit-card/50 backdrop-blur shadow-2xl">
             <CardHeader>
+                <div className="flex justify-center mb-4">
+                    <Image
+                        src="/dashboard-logo.svg"
+                        alt="PitStopAI Logo"
+                        width={80}
+                        height={80}
+                        className="h-20 w-20"
+                    />
+                </div>
                 <CardTitle className="text-2xl font-bold text-white text-center">Welcome Back</CardTitle>
                 <CardDescription className="text-center text-pit-subtext">
                     Sign in to continue to your dashboard

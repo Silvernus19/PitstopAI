@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Loader2, Mail, CheckCircle2 } from 'lucide-react'
 
 import { SignupState } from '@/app/auth/actions'
@@ -44,6 +45,15 @@ export function SignupForm() {
     return (
         <Card className="w-full max-w-md border-pit-accent/20 bg-pit-card/50 backdrop-blur shadow-2xl">
             <CardHeader>
+                <div className="flex justify-center mb-4">
+                    <Image
+                        src="/dashboard-logo.svg"
+                        alt="PitStopAI Logo"
+                        width={80}
+                        height={80}
+                        className="h-20 w-20"
+                    />
+                </div>
                 <CardTitle className="text-2xl font-bold text-white text-center">Create Account</CardTitle>
                 <CardDescription className="text-center text-pit-subtext">
                     Join PitStopAI to get honest mechanic intel

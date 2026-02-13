@@ -1,5 +1,6 @@
 import { AvatarDropdown } from "./avatar-dropdown"
 import { Menu, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
 
 interface HeaderProps {
     chatTitle?: string
@@ -22,6 +23,13 @@ export function Header({ chatTitle, username, avatarUrl, onMobileMenuToggle, sid
                     <Menu className="h-6 w-6" />
                 </button>
 
+                <Image
+                    src="/dashboard-logo.svg"
+                    alt="PitStopAI"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8"
+                />
                 <h1 className="text-lg font-semibold text-white truncate max-w-[200px] md:max-w-md">
                     {chatTitle || "PitStopAI"}
                 </h1>
