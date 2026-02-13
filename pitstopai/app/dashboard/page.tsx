@@ -1,5 +1,6 @@
 import { ChatInterface } from "@/components/dashboard/chat-interface"
 import { getChat, getChatMessages, getUserProfile } from "@/app/dashboard/actions"
+import { DashboardToast } from "@/components/dashboard/dashboard-toast"
 
 interface PageProps {
     searchParams: Promise<{ chat?: string }>
@@ -35,6 +36,7 @@ export default async function DashboardPage(props: PageProps) {
 
     return (
         <div className="h-full w-full bg-pit-black">
+            <DashboardToast />
             <ChatInterface
                 chatId={chatId}
                 initialContext={context}

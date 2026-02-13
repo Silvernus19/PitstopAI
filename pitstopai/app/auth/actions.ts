@@ -35,7 +35,13 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
         redirectUrl = 'http://localhost:3000'
     }
 
-    const { error } = await supabase.auth.signUp({
+    console.log('--- SIGNUP DEBUG START ---')
+    console.log('Env NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL)
+    console.log('Env VERCEL_URL:', process.env.VERCEL_URL)
+    console.log('Resolved redirectUrl:', redirectUrl)
+    console.log('Target emailRedirectTo:', `${redirectUrl}/auth/callback`)
+
+    const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -47,8 +53,13 @@ export async function signup(prevState: SignupState, formData: FormData): Promis
     })
 
     if (error) {
+        console.error('Supabase SignUp Error:', error)
         return { error: error.message, success: false }
     }
+
+    console.log('Supabase SignUp Success Session:', data.session ? 'Created' : 'Null (Verify Email)')
+    console.log('Supabase SignUp Success User:', data.user?.id)
+    console.log('--- SIGNUP DEBUG END ---')
 
     // Determine if it was a success (check email) or potential auto-sign-in if config is wrong (but we assume it's right)
     // We return a success state to the client to show the "Check your email" message
