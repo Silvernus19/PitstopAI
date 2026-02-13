@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react"
 import { useChat } from "@ai-sdk/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { createChat } from "@/app/dashboard/actions"
+import { createChat, createChatWithFirstMessage } from "@/app/dashboard/actions"
 import { MessageBubble } from "./message-bubble"
 import { ChatInput } from "./chat-input"
 import { WelcomeScreen } from "./welcome-screen"
@@ -61,19 +61,20 @@ export function ChatInterface({ chatId, initialMessages = [], username }: ChatIn
         if (isLoading) return
 
         if (!chatId) {
-            const title = messageContent.length > 30 ? messageContent.substring(0, 30) + "..." : messageContent
-            const { data, error: createError } = await createChat(title)
-            if (createError || !data) {
+            // Start a brand new chat
+            const { data, error: createError } = await createChatWithFirstMessage(messageContent)
+            if (createError && !data) {
                 console.error("Failed to create chat", createError)
                 return
             }
-            // Navigate - initialMessages will be empty on new chat until messages arrive
-            router.push(`/dashboard?chat=${data.id}`)
-            // Note: In a real app, we'd persist the first message OR pass it via searchParams/state
-            // For now, let's assume the user will re-type or the redirect handles it.
+
+            // Navigate to the new chat. 
+            // We include trigger=true to auto-start the AI response since the user message is now in DB.
+            router.push(`/dashboard?chat=${data!.id}&trigger=true`)
             return
         }
 
+        // Existing chat: append message normally
         append({
             role: 'user',
             content: messageContent

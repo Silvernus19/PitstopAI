@@ -112,6 +112,48 @@ export async function createChat(title: string, vehicleId?: string) {
     return { data }
 }
 
+export async function createChatWithFirstMessage(content: string, vehicleId?: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    const title = content.length > 30 ? content.substring(0, 30) + "..." : content
+
+    // 1. Create the chat
+    const { data: chat, error: chatError } = await supabase
+        .from('chats')
+        .insert({
+            user_id: user.id,
+            vehicle_id: vehicleId || null,
+            title
+        })
+        .select()
+        .single()
+
+    if (chatError) {
+        console.error('Error creating chat:', chatError)
+        return { error: chatError.message }
+    }
+
+    // 2. Insert the first message
+    const { error: msgError } = await supabase
+        .from('messages')
+        .insert({
+            chat_id: chat.id,
+            role: 'user',
+            content
+        })
+
+    if (msgError) {
+        console.error('Error inserting first message:', msgError)
+        // We created the chat but failed to add the message. 
+        // We'll still return the chat ID so the UI can redirect, but with an error.
+        return { data: chat, error: `Chat created but message failed: ${msgError.message}` }
+    }
+
+    return { data: chat }
+}
+
 export async function startChatWithDetails(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
