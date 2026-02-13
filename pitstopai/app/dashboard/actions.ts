@@ -409,7 +409,7 @@ export async function saveExplanationToChat(code: string, explanation: string, v
     return { success: true, chatId: chat.id }
 }
 
-export async function createErrorCodeChat(code: string, vehicleId?: string) {
+export async function createErrorCodeChat(code: string, vehicleId?: string, manualVehicleName?: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -420,7 +420,7 @@ export async function createErrorCodeChat(code: string, vehicleId?: string) {
         .from('chats')
         .insert({
             user_id: user.id,
-            vehicle_id: vehicleId || null,
+            vehicle_id: (vehicleId && vehicleId.length > 20) ? vehicleId : null,
             title: `Error Code: ${code.toUpperCase()}`
         })
         .select()
@@ -429,11 +429,12 @@ export async function createErrorCodeChat(code: string, vehicleId?: string) {
     if (chatError) return { error: chatError.message }
 
     // 2. Insert the initial user query
-    // We'll also fetch vehicle info if provided to make the initial message more detailed
     let vehicleName = ""
-    if (vehicleId) {
+    if (vehicleId && vehicleId.length > 20) {
         const { data: v } = await supabase.from('user_vehicles').select('*').eq('id', vehicleId).single()
         if (v) vehicleName = ` for my ${v.model_year} ${v.make} ${v.model}`
+    } else if (manualVehicleName) {
+        vehicleName = ` for my ${manualVehicleName}`
     }
 
     const initialContent = `Explain error code ${code.toUpperCase()}${vehicleName}. Please include meaning, causes, urgency, and KES cost estimates.`

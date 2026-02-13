@@ -8,9 +8,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+const POPULAR_MODELS = [
+    "Toyota Premio", "Toyota Fielder", "Toyota Aqua", "Toyota Vitz",
+    "Toyota Axio", "Toyota Probox", "Toyota Harrier", "Nissan Note",
+    "Nissan Sylphy", "Mazda Axela", "Mazda Demio", "Honda Fit",
+    "Subaru Impreza", "Subaru Forester"
+]
+
 export function ErrorCodesModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const [vehicles, setVehicles] = useState<Vehicle[]>([])
-    const [selectedVehicleId, setSelectedVehicleId] = useState<string>("")
+    const [selectedVehicle, setSelectedVehicle] = useState<string>("")
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [errorCode, setErrorCode] = useState("")
     const [error, setError] = useState("")
@@ -31,12 +38,15 @@ export function ErrorCodesModal({ isOpen, onClose }: { isOpen: boolean, onClose:
         setError("")
 
         try {
+            // Determine if selection is a saved car ID or a manual model name
+            const isSavedCar = vehicles.find(v => v.id === selectedVehicle)
+            const vehicleId = isSavedCar ? selectedVehicle : undefined
+            const manualName = !isSavedCar && selectedVehicle !== "" ? selectedVehicle : undefined
+
             // Call onClose immediately so the user sees the dashboard again
-            // while the server action processes the redirection.
             onClose()
-            await createErrorCodeChat(errorCode, selectedVehicleId)
+            await createErrorCodeChat(errorCode, vehicleId, manualName)
         } catch (err: any) {
-            // In Next.js, redirect() throws an error that should not be caught as a real error
             if (err.digest?.includes('NEXT_REDIRECT')) {
                 return;
             }
@@ -86,16 +96,29 @@ export function ErrorCodesModal({ isOpen, onClose }: { isOpen: boolean, onClose:
                                 <Car className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-pit-subtext group-hover:text-pit-accent transition-colors" />
                                 <select
                                     id="vehicle"
-                                    value={selectedVehicleId}
-                                    onChange={(e) => setSelectedVehicleId(e.target.value)}
+                                    value={selectedVehicle}
+                                    onChange={(e) => setSelectedVehicle(e.target.value)}
                                     className="w-full h-14 pl-10 pr-4 bg-pit-black border border-pit-gray rounded-md text-white focus:outline-none focus:ring-2 focus:ring-pit-accent transition-all appearance-none"
                                 >
                                     <option value="">Select your car for better advice</option>
-                                    {vehicles.map((v) => (
-                                        <option key={v.id} value={v.id}>
-                                            {v.nickname || `${v.make} ${v.model} (${v.model_year})`}
-                                        </option>
-                                    ))}
+
+                                    {vehicles.length > 0 && (
+                                        <optgroup label="My Saved Cars">
+                                            {vehicles.map((v) => (
+                                                <option key={v.id} value={v.id}>
+                                                    {v.nickname || `${v.make} ${v.model} (${v.model_year})`}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    )}
+
+                                    <optgroup label="Popular Models in Kenya">
+                                        {POPULAR_MODELS.map((model) => (
+                                            <option key={model} value={model}>
+                                                {model}
+                                            </option>
+                                        ))}
+                                    </optgroup>
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                     <div className="w-2 h-2 border-b-2 border-r-2 border-white rotate-45" />
