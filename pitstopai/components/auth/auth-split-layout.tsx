@@ -15,6 +15,15 @@ export function AuthSplitLayout({ children, title, subtitle }: AuthSplitLayoutPr
             {/* Left Side: Form Container */}
             <div className="flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 z-10 w-full animate-in fade-in duration-700 slide-in-from-left-4">
                 <div className="w-full max-w-md space-y-8">
+                    <div className="flex mb-4">
+                        <Image
+                            src="/dashboard-logo.svg"
+                            alt="PitStopAI Logo"
+                            width={80}
+                            height={80}
+                            className="h-20 w-20"
+                        />
+                    </div>
                     <div className="space-y-2">
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
                             {title}

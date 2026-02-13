@@ -23,9 +23,9 @@ export default async function RootPage() {
                     <Image
                         src="/dashboard-logo.svg"
                         alt="PitStopAI Logo"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8"
+                        width={44}
+                        height={44}
+                        className="h-11 w-11"
                     />
                     PitstopAI
                 </div>
@@ -51,9 +51,9 @@ export default async function RootPage() {
                     <Image
                         src="/dashboard-logo.svg"
                         alt="PitStopAI Logo"
-                        width={24}
-                        height={24}
-                        className="h-6 w-6"
+                        width={48}
+                        height={48}
+                        className="h-12 w-12"
                     />
                     PitstopAI
                 </div>

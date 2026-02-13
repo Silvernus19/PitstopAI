@@ -26,9 +26,9 @@ export function Header({ chatTitle, username, avatarUrl, onMobileMenuToggle, sid
                 <Image
                     src="/dashboard-logo.svg"
                     alt="PitStopAI"
-                    width={32}
-                    height={32}
-                    className="h-8 w-8"
+                    width={44}
+                    height={44}
+                    className="h-11 w-11"
                 />
                 <h1 className="text-lg font-semibold text-white truncate max-w-[200px] md:max-w-md">
                     {chatTitle || "PitStopAI"}

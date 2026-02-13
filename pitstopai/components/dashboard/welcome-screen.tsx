@@ -22,14 +22,14 @@ export function WelcomeScreen({ onPromptClick, username }: WelcomeScreenProps) {
 
     return (
         <div className="flex flex-col items-center justify-center p-4 text-center space-y-12 md:space-y-16 animate-in fade-in duration-700 slide-in-from-bottom-4">
-            <div className="flex flex-col items-center space-y-2">
-                <div className="flex justify-center -mb-2">
+            <div className="flex flex-col items-center space-y-1">
+                <div className="flex justify-center -mb-8">
                     <Image
                         src="/dashboard-logo.svg"
                         alt="PitStopAI Logo"
-                        width={220}
-                        height={220}
-                        className="h-auto w-40 md:w-56"
+                        width={280}
+                        height={280}
+                        className="h-auto w-48 md:w-64"
                     />
                 </div>
                 <div className="space-y-0.5">
