@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils"
-import { ComponentProps } from "react"
+import { ComponentProps, useState } from "react"
+import { Copy, Check } from "lucide-react"
+import { toast } from "sonner"
 
 export interface Message {
     id: string
@@ -14,6 +16,18 @@ interface MessageBubbleProps extends ComponentProps<"div"> {
 
 export function MessageBubble({ message, className, ...props }: MessageBubbleProps) {
     const isUser = message.role === "user"
+    const [copied, setCopied] = useState(false)
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(message.content)
+            setCopied(true)
+            toast.success("Copied to clipboard!")
+            setTimeout(() => setCopied(false), 2000)
+        } catch (err) {
+            toast.error("Failed to copy")
+        }
+    }
 
     return (
         <div
@@ -26,12 +40,26 @@ export function MessageBubble({ message, className, ...props }: MessageBubblePro
         >
             <div
                 className={cn(
-                    "max-w-[85%] md:max-w-[75%] px-8 py-6 md:px-10 md:py-7 rounded-[2rem] text-[17px] md:text-[19px] leading-relaxed md:leading-8 break-words",
+                    "relative group max-w-[85%] md:max-w-[75%] px-8 py-6 md:px-10 md:py-7 rounded-[2rem] text-[17px] md:text-[19px] leading-relaxed md:leading-8 break-words",
                     isUser
                         ? "bg-pit-accent text-white"
                         : "bg-zinc-900/50 text-pit-text/95"
                 )}
             >
+                {!isUser && !message.isLoading && (
+                    <button
+                        onClick={handleCopy}
+                        className="absolute top-4 right-4 p-2 rounded-lg bg-zinc-800/50 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all hover:text-white hover:bg-zinc-700/50"
+                        title="Copy response"
+                    >
+                        {copied ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                        ) : (
+                            <Copy className="h-4 w-4" />
+                        )}
+                    </button>
+                )}
+
                 {message.isLoading ? (
                     <div className="flex items-center gap-3 text-pit-subtext select-none">
                         <span className="text-sm font-medium animate-pulse">AI is thinking...</span>
@@ -50,9 +78,10 @@ export function MessageBubble({ message, className, ...props }: MessageBubblePro
                         </svg>
                     </div>
                 ) : (
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <div className="whitespace-pre-wrap">{message.content}</div>
                 )}
             </div>
         </div>
     )
 }
+
