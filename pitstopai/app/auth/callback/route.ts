@@ -22,9 +22,15 @@ export async function GET(request: Request) {
             } else {
                 return NextResponse.redirect(`${origin}/dashboard?verified=true`)
             }
+        } else {
+            console.error('Supabase Auth Callback Error:', error.message, error.status)
         }
     }
 
     // return the user to an error page with instructions
+    const errorParam = searchParams.get('error') || 'unknown'
+    const errorCode = searchParams.get('error_code') || 'none'
+    console.error('Auth Callback Failed. Params:', { errorParam, errorCode, hasCode: !!code })
+
     return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
