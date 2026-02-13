@@ -65,7 +65,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
                 <button
                     onClick={handleSubmit}
                     disabled={!input.trim() || isLoading}
-                    className="p-2 text-pit-accent hover:text-pit-blue-hover disabled:text-zinc-700 transition-colors flex-shrink-0"
+                    className="p-2 text-pit-accent hover:text-pit-accent-hover disabled:text-zinc-700 transition-colors flex-shrink-0"
                 >
                     <Send className="h-5 w-5 fill-current" />
                 </button>

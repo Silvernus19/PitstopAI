@@ -21,7 +21,7 @@ export function LoginForm() {
     const [state, formAction, isPending] = useActionState(login, initialState)
 
     return (
-        <Card className="w-full max-w-md border-pit-blue/20 bg-pit-card/50 backdrop-blur shadow-2xl">
+        <Card className="w-full max-w-md border-pit-accent/20 bg-pit-card/50 backdrop-blur shadow-2xl">
             <CardHeader>
                 <CardTitle className="text-2xl font-bold text-white text-center">Welcome Back</CardTitle>
                 <CardDescription className="text-center text-pit-subtext">
@@ -38,7 +38,7 @@ export function LoginForm() {
                             type="email"
                             placeholder="john@example.com"
                             required
-                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-blue"
+                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-accent"
                         />
                     </div>
                     <div className="space-y-2">
@@ -53,7 +53,7 @@ export function LoginForm() {
                             name="password"
                             type="password"
                             required
-                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-blue"
+                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-accent"
                         />
                     </div>
 
@@ -66,7 +66,7 @@ export function LoginForm() {
 
                     <Button
                         type="submit"
-                        className="w-full bg-pit-blue hover:bg-pit-blue-hover text-white font-semibold"
+                        className="w-full bg-pit-accent hover:bg-pit-accent-hover text-white font-semibold"
                         disabled={isPending}
                     >
                         {isPending ? (
@@ -83,7 +83,7 @@ export function LoginForm() {
             <CardFooter className="flex justify-center border-t border-white/5 pt-6">
                 <p className="text-sm text-pit-subtext">
                     Don't have an account?{' '}
-                    <Link href="/signup" className="text-pit-blue hover:underline">
+                    <Link href="/signup" className="text-pit-accent hover:underline">
                         Sign Up
                     </Link>
                 </p>

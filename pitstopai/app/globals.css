@@ -4,12 +4,13 @@
   --color-pit-black: #050505;
   --color-pit-dark: #0A0A0A;
   --color-pit-card: #111111;
-  --color-pit-blue: #2563EB;
-  --color-pit-blue-hover: #1D4ED8;
+  --color-pit-terracotta: #92400E;
+  --color-pit-accent: #92400E;
+  --color-pit-accent-hover: #7C2D12;
+  --color-pit-olive: #6B7280;
   --color-pit-red: #EF4444;
   --color-pit-text: #FFFFFF;
   --color-pit-subtext: #9CA3AF;
-  --color-pit-accent: #2563EB;
   --color-pit-gray: #27272a;
 
   /* Shadcn UI Variables Mapped to PitStopAI Theme */
@@ -22,7 +23,7 @@
   --popover: var(--color-pit-card);
   --popover-foreground: var(--color-pit-text);
 
-  --primary: var(--color-pit-blue);
+  --primary: var(--color-pit-terracotta);
   --primary-foreground: #FFFFFF;
 
   --secondary: var(--color-pit-dark);
@@ -40,7 +41,7 @@
   --border: #27272a;
   /* Zinc 800 */
   --input: #27272a;
-  --ring: var(--color-pit-blue);
+  --ring: var(--color-pit-terracotta);
 
   --radius: 0.5rem;
   --animate-spin-slow: gear-spin 3s linear infinite;

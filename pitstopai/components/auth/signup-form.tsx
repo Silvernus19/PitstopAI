@@ -22,10 +22,10 @@ export function SignupForm() {
 
     if (state?.success) {
         return (
-            <Card className="w-full max-w-md border-pit-blue/20 bg-pit-card/50 backdrop-blur">
+            <Card className="w-full max-w-md border-pit-accent/20 bg-pit-card/50 backdrop-blur">
                 <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-pit-blue/10">
-                        <Mail className="h-8 w-8 text-pit-blue" />
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-pit-accent/10">
+                        <Mail className="h-8 w-8 text-pit-accent" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-white">Check Your Email</CardTitle>
                     <CardDescription className="text-pit-subtext">
@@ -42,7 +42,7 @@ export function SignupForm() {
     }
 
     return (
-        <Card className="w-full max-w-md border-pit-blue/20 bg-pit-card/50 backdrop-blur shadow-2xl">
+        <Card className="w-full max-w-md border-pit-accent/20 bg-pit-card/50 backdrop-blur shadow-2xl">
             <CardHeader>
                 <CardTitle className="text-2xl font-bold text-white text-center">Create Account</CardTitle>
                 <CardDescription className="text-center text-pit-subtext">
@@ -58,7 +58,7 @@ export function SignupForm() {
                             name="username"
                             placeholder="johndoe"
                             required
-                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-blue"
+                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-accent"
                         />
                     </div>
                     <div className="space-y-2">
@@ -69,7 +69,7 @@ export function SignupForm() {
                             type="email"
                             placeholder="john@example.com"
                             required
-                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-blue"
+                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-accent"
                         />
                     </div>
                     <div className="space-y-2">
@@ -80,7 +80,7 @@ export function SignupForm() {
                             type="password"
                             required
                             minLength={6}
-                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-blue"
+                            className="bg-pit-black border-white/10 text-white placeholder:text-pit-subtext focus-visible:ring-pit-accent"
                         />
                     </div>
 
@@ -93,7 +93,7 @@ export function SignupForm() {
 
                     <Button
                         type="submit"
-                        className="w-full bg-pit-blue hover:bg-pit-blue-hover text-white font-semibold"
+                        className="w-full bg-pit-accent hover:bg-pit-accent-hover text-white font-semibold"
                         disabled={isPending}
                     >
                         {isPending ? (
@@ -110,7 +110,7 @@ export function SignupForm() {
             <CardFooter className="flex justify-center border-t border-white/5 pt-6">
                 <p className="text-sm text-pit-subtext">
                     Already have an account?{' '}
-                    <Link href="/login" className="text-pit-blue hover:underline">
+                    <Link href="/login" className="text-pit-accent hover:underline">
                         Sign In
                     </Link>
                 </p>

@@ -37,7 +37,7 @@ export function Hero() {
 
                     <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full justify-center">
                         <Link href="/auth/signup">
-                            <Button size="lg" className="h-14 px-8 text-lg bg-pit-accent hover:bg-pit-blue-hover text-white rounded-full w-full sm:w-auto shadow-[0_0_30px_-5px_var(--pit-accent)] hover:shadow-[0_0_40px_-5px_var(--pit-accent)] transition-all duration-300 border-none">
+                            <Button size="lg" className="h-14 px-8 text-lg bg-pit-accent hover:bg-pit-accent-hover text-white rounded-full w-full sm:w-auto shadow-[0_0_30px_-5px_var(--pit-accent)] hover:shadow-[0_0_40px_-5px_var(--pit-accent)] transition-all duration-300 border-none">
                                 Diagnose Now <ArrowRight className="ml-2 h-5 w-5" />
                             </Button>
                         </Link>

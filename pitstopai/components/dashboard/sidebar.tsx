@@ -178,7 +178,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggle, onOpenAccount 
 
                                     {/* Add Car Action */}
                                     <AddVehicleDialog onSuccess={loadVehicles}>
-                                        <button className="flex items-center gap-2 text-xs text-pit-accent hover:text-pit-blue-hover py-2 px-2 mt-1 w-full font-medium transition-colors">
+                                        <button className="flex items-center gap-2 text-xs text-pit-accent hover:text-pit-accent-hover py-2 px-2 mt-1 w-full font-medium transition-colors">
                                             <Plus className="h-3 w-3" />
                                             Add New Car
                                         </button>
